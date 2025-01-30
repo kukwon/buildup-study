@@ -26,8 +26,12 @@ function PasswordInput({ reference, valid, validate }) {
 
   return (
     <div>
-      PassWord:
-      <input type="password" ref={reference} onChange={validate} />
+      PassWord:{" "}
+      <input
+        type="password"
+        ref={reference}
+        onChange={(e) => validate(e.target.value)}
+      />
       <button onClick={changeMode}>🔒 보이기</button>
       {valid.maximum || (
         <div style={{ color: "red" }}>
@@ -53,8 +57,7 @@ function App() {
     required: false,
   });
 
-  function passwordValidate(e) {
-    const input = e.currentTarget.value;
+  function passwordValidate(input) {
     const changed = produce(passwordValid, (draft) => {
       if (passwordValid.maximum !== input.length <= 10)
         draft.maximum = input.length <= 10;
@@ -66,14 +69,24 @@ function App() {
     setPasswordValid(changed);
   }
 
+  function registration() {
+    const request = {
+      username: usernameRef.current?.value,
+      password: passwordRef.current?.value,
+    };
+    passwordValidate(request.password);
+    console.log(request);
+  }
+
   return (
-    <section>
+    <section style={{ textAlign: "start", width: 400 }}>
       <UsernameInput reference={usernameRef} />
       <PasswordInput
         reference={passwordRef}
         valid={passwordValid}
         validate={passwordValidate}
       />
+      <button onClick={registration}>회원가입 완료</button>
     </section>
   );
 }
