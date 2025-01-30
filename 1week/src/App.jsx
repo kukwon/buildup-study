@@ -10,13 +10,7 @@ function UsernameInput({ reference }) {
   );
 }
 
-function PasswordInput({ reference }) {
-  const [valid, setValid] = useState({
-    maximum: false,
-    minimum: false,
-    required: false,
-  });
-
+function PasswordInput({ reference, valid, validate }) {
   function changeMode(e) {
     if (reference.current.type === "password") {
       reference.current.type = "text";
@@ -32,23 +26,8 @@ function PasswordInput({ reference }) {
 
   return (
     <div>
-      PassWord:{" "}
-      <input
-        type="password"
-        ref={reference}
-        onChange={(e) => {
-          const input = e.currentTarget.value;
-          const changed = produce(valid, (draft) => {
-            if (valid.maximum !== input.length <= 10)
-              draft.maximum = input.length <= 10;
-            if (valid.minimum !== input.length > 5)
-              draft.minimum = input.length > 5;
-            if (valid.required !== input.length > 0)
-              draft.required = input.length > 0;
-          });
-          setValid(changed);
-        }}
-      />
+      PassWord:
+      <input type="password" ref={reference} onChange={validate} />
       <button onClick={changeMode}>🔒 보이기</button>
       {valid.maximum || (
         <div style={{ color: "red" }}>
@@ -68,10 +47,33 @@ function PasswordInput({ reference }) {
 function App() {
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
+  const [passwordValid, setPasswordValid] = useState({
+    maximum: false,
+    minimum: false,
+    required: false,
+  });
+
+  function passwordValidate(e) {
+    const input = e.currentTarget.value;
+    const changed = produce(passwordValid, (draft) => {
+      if (passwordValid.maximum !== input.length <= 10)
+        draft.maximum = input.length <= 10;
+      if (passwordValid.minimum !== input.length > 5)
+        draft.minimum = input.length > 5;
+      if (passwordValid.required !== input.length > 0)
+        draft.required = input.length > 0;
+    });
+    setPasswordValid(changed);
+  }
+
   return (
     <section>
       <UsernameInput reference={usernameRef} />
-      <PasswordInput reference={passwordRef} />
+      <PasswordInput
+        reference={passwordRef}
+        valid={passwordValid}
+        validate={passwordValidate}
+      />
     </section>
   );
 }
