@@ -4,17 +4,34 @@ import './App.css'
 function Header({ title }) {
   return (
     <div style={{ position: 'sticky', top: 0, height: 60, backgroundColor: 'white' }}>
-      <div style={{ color: 'black' }}>{title}</div>
+      <div id='header-title' style={{ color: 'black', opacity: 0 }}>
+        {title}
+      </div>
     </div>
   )
 }
-
 function Title({ title }) {
   const titleReference = useRef(null)
 
   useEffect(() => {
     console.log(titleReference.current)
     console.log(titleReference.current?.innerText)
+
+    //1.  Define 정의
+    const observer = new window.IntersectionObserver(([entry]) => {
+      if (!entry.intersectionRatio) {
+        document.getElementById('header-title').classList.add('show-header-title')
+      } else {
+        document.getElementById('header-title').classList.remove('show-header-title')
+      }
+    })
+
+    //2. Attach 부착
+    observer.observe(titleReference.current)
+    //3. Detach 삭제 (소멸자)
+    return () => {
+      observer.disconnect()
+    }
   }, [])
 
   return <h3 ref={titleReference}>{title}</h3>
