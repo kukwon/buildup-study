@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from 'react'
+import { createContext, useContext, useReducer } from 'react'
 import { createPortal } from 'react-dom'
 import './App.css'
 
@@ -32,16 +32,34 @@ const ModalContext = createContext({
   close: () => {},
 })
 
+/**
+ *
+ * @param {*} state
+ * @param {*} action
+ * @returns
+ */
+function reducer(state, action) {
+  switch (action.type.toUpperCase()) {
+    default:
+      return {
+        open: action.open,
+        type: action.type,
+        title: action.title,
+        content: action.content,
+      }
+  }
+}
+
 function ModalContextProvider({ children }) {
   const CLOSED = { open: false, type: 'info', title: undefined, content: undefined }
-  const [modal, setModal] = useState(CLOSED)
+  const [modal, dispatch] = useReducer(reducer, CLOSED)
 
   function show({ type, title, content }) {
-    setModal({ open: true, type, title, content })
+    dispatch({ open: true, type, title, content })
   }
 
   function close() {
-    setModal(CLOSED)
+    dispatch(CLOSED)
   }
 
   return (
