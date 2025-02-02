@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import './App.css'
 
@@ -6,6 +6,35 @@ const ModalContext = createContext({
   show: (content) => {},
   close: () => {},
 })
+
+function Modal({ label, children: content }) {
+  const [open, setOpen] = useState(false)
+  const dialogRef = useRef(null)
+
+  useEffect(() => {
+    if (dialogRef.current) {
+      if (open) {
+        dialogRef.current.showModal()
+      } else {
+        dialogRef.current.close()
+      }
+    }
+  }, [open])
+
+  return (
+    <>
+      <button onClick={(e) => setOpen(true)}>{label}</button>
+      {open &&
+        createPortal(
+          <dialog ref={dialogRef} onClose={(e) => setOpen(false)}>
+            {content}
+            <button onClick={(e) => setOpen(false)}>닫기</button>
+          </dialog>,
+          document.body,
+        )}
+    </>
+  )
+}
 
 function ModalContextProvider({ children }) {
   const [modal, setModal] = useState({ open: false, content: <></> })
@@ -52,6 +81,9 @@ function App() {
         <ModalButton1 />
         <ModalButton2 />
         <ModalButton3 />
+        <Modal label='4 열기'>
+          <h3>Modal 4</h3>
+        </Modal>
       </ModalContextProvider>
     </>
   )
