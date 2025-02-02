@@ -2,6 +2,16 @@ import { createContext, useState, useContext } from 'react'
 import { createPortal } from 'react-dom'
 import './App.css'
 
+function Modal({ title = undefined, content = undefined, onClose }) {
+  return (
+    <dialog open>
+      <h3>{title}</h3>
+      <p>{content}</p>
+      <button onClick={(e) => onClose()}>닫기</button>
+    </dialog>
+  )
+}
+
 const ModalContext = createContext({
   show: () => {},
   close: () => {},
@@ -23,11 +33,7 @@ function ModalContextProvider({ children }) {
       {children}
       {modal.open &&
         createPortal(
-          <dialog open>
-            <h3>{modal.title}</h3>
-            <p>{modal.content}</p>
-            <button onClick={(e) => close()}>닫기</button>
-          </dialog>,
+          <Modal title={modal.title} content={modal.content} onClose={close} />,
           document.body,
         )}
     </ModalContext.Provider>
