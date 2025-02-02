@@ -40,6 +40,27 @@ const ModalContext = createContext({
  */
 function reducer(state, action) {
   switch (action.type.toUpperCase()) {
+    case 'SUCCESS_SAVE':
+      return {
+        open: true,
+        type: 'success',
+        title: '저장 완료',
+        content: '저장이 완료되었습니다.',
+      }
+    case 'WARN_TYPEERROR':
+      return {
+        open: true,
+        type: 'warn',
+        title: '타입 에러 발생',
+        content: '다시 입력해 주세요.',
+      }
+    case 'ERROR_UNKNOWN':
+      return {
+        open: true,
+        type: 'error',
+        title: '알수없는 에러 발생',
+        content: '고객 센터에 문의하세요',
+      }
     default:
       return {
         open: action.open,
@@ -118,6 +139,17 @@ function App() {
         <SuccessModalButton />
         <WarningModalButton />
         <ErrorModalButton />
+      </div>
+      <div style={{ display: 'flex', gap: 10, marginTop: 10, justifyContent: 'center' }}>
+        <ModalContext.Consumer>
+          {({ show }) => <button onClick={(e) => show({ type: 'SUCCESS_SAVE' })}>저장</button>}
+        </ModalContext.Consumer>
+        <ModalContext.Consumer>
+          {({ show }) => <button onClick={(e) => show({ type: 'WARN_TYPEERROR' })}>타입</button>}
+        </ModalContext.Consumer>
+        <ModalContext.Consumer>
+          {({ show }) => <button onClick={(e) => show({ type: 'ERROR_UNKNOWN' })}>에러</button>}
+        </ModalContext.Consumer>
       </div>
     </ModalContextProvider>
   )
