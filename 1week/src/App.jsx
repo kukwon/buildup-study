@@ -1,35 +1,70 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { createContext, useState, useContext } from 'react'
+import { createPortal } from 'react-dom'
+import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0);
+const ModalContext = createContext({
+  show: () => {},
+  close: () => {},
+})
+
+function ModalContextProvider({ children }) {
+  const [modal, setModal] = useState({ open: false, title: undefined, content: undefined })
+
+  function show({ title, content }) {
+    setModal({ open: true, title, content })
+  }
+
+  function close() {
+    setModal({ open: false, title: undefined, content: undefined })
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+    <ModalContext.Provider value={{ show, close }}>
+      {children}
+      {modal.open &&
+        createPortal(
+          <dialog open>
+            <h3>{modal.title}</h3>
+            <p>{modal.content}</p>
+            <button onClick={(e) => close()}>닫기</button>
+          </dialog>,
+          document.body,
+        )}
+    </ModalContext.Provider>
+  )
 }
 
-export default App;
+function InformationModalButton() {
+  const { show } = useContext(ModalContext)
+  return <button onClick={(e) => show({ title: '안내', content: '안내 관련 노출' })}>안내</button>
+}
+
+function SuccessModalButton() {
+  const { show } = useContext(ModalContext)
+  return <button onClick={(e) => show({ title: '성공', content: '성공 관련 노출' })}>성공</button>
+}
+
+function WarningModalButton() {
+  const { show } = useContext(ModalContext)
+  return <button onClick={(e) => show({ title: '경고', content: '경고 관련 노출' })}>경고</button>
+}
+
+function ErrorModalButton() {
+  const { show } = useContext(ModalContext)
+  return <button onClick={(e) => show({ title: '에러', content: '에러 관련 노출' })}>에러</button>
+}
+
+function App() {
+  return (
+    <ModalContextProvider>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <InformationModalButton />
+        <SuccessModalButton />
+        <WarningModalButton />
+        <ErrorModalButton />
+      </div>
+    </ModalContextProvider>
+  )
+}
+
+export default App
