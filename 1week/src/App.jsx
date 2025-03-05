@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import './App.css'
 import { useForm } from 'react-hook-form'
 
@@ -5,7 +6,6 @@ function App() {
   const {
     handleSubmit,
     register,
-    watch,
     formState: { errors },
   } = useForm()
 
@@ -18,7 +18,17 @@ function App() {
     <>
       <h3 style={{ margin: 0 }}>유저 추가하기</h3>
       <form className='form-wrapper' onSubmit={handleSubmit(send)}>
-        <input className='input' {...register('username')} />
+        <input
+          className={clsx('input', errors?.username && 'error-border')}
+          {...register('username', {
+            required: { value: true, message: '아이디를 입력해주세요' },
+            maxLength: {
+              value: 10,
+              message: '아이디는 10자 이상이 될 수 없습니다',
+            },
+          })}
+        />
+        <div className={errors?.username ? 'error-text' : ''}>{errors?.username?.message}</div>
         <button type='button'>저장안됨</button>
         <button>저장하기</button>
         <input type='submit' value='저장하기' />
